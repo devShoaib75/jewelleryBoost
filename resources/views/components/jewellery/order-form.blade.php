@@ -21,7 +21,19 @@
         </p>
         <div class="material-pills" id="materialPills">
 
-            {{-- Option 1: 22K Gold — 85g Full Set --}}
+            @forelse($materials ?? [] as $material)
+            {{-- Dynamic Material Option --}}
+            <label class="material-pill" onclick="selectMaterial(this, {{ $material->price }}, '{{ addslashes($material->name) }}')">
+                <input type="radio" name="material" value="{{ $material->price }}" @if($loop->first) checked @endif>
+                <span class="pill-icon">{{ $material->icon }}</span>
+                <span class="pill-info">
+                    <span class="pill-name">{{ $material->name }}</span>
+                    <span class="pill-sub">{{ $material->sub_text }}</span>
+                </span>
+                <span class="pill-price">৳{{ number_format($material->price) }}</span>
+            </label>
+            @empty
+            {{-- Default Option 1: 22K Gold — 85g Full Set --}}
             <label class="material-pill" onclick="selectMaterial(this, 185000, '22K Gold — 85g')">
                 <input type="radio" name="material" value="185000" checked>
                 <span class="pill-icon">🏆</span>
@@ -32,7 +44,7 @@
                 <span class="pill-price">৳1,85,000</span>
             </label>
 
-            {{-- Option 2: 22K Gold — 65g Necklace + Earrings --}}
+            {{-- Default Option 2: 22K Gold — 65g Necklace + Earrings --}}
             <label class="material-pill" onclick="selectMaterial(this, 145000, '22K Gold — 65g')">
                 <input type="radio" name="material" value="145000">
                 <span class="pill-icon">⭐</span>
@@ -43,7 +55,7 @@
                 <span class="pill-price">৳1,45,000</span>
             </label>
 
-            {{-- Option 3: 21K Gold — 65g Budget Bridal --}}
+            {{-- Default Option 3: 21K Gold — 65g Budget Bridal --}}
             <label class="material-pill" onclick="selectMaterial(this, 115000, '21K Gold — 65g')">
                 <input type="radio" name="material" value="115000">
                 <span class="pill-icon">✨</span>
@@ -54,7 +66,7 @@
                 <span class="pill-price">৳1,15,000</span>
             </label>
 
-            {{-- Option 4: Gold-Plated -- Imitation --}}
+            {{-- Default Option 4: Gold-Plated -- Imitation --}}
             <label class="material-pill" onclick="selectMaterial(this, 75000, 'Gold-Plated — 90g')">
                 <input type="radio" name="material" value="75000">
                 <span class="pill-icon">💫</span>
@@ -64,6 +76,7 @@
                 </span>
                 <span class="pill-price">৳75,000</span>
             </label>
+            @endforelse
 
         </div>
 

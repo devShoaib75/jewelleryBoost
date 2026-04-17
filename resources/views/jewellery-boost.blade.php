@@ -1,6 +1,7 @@
 {{-- 
-    Jewellery Boost - Blade Template
+    Jewellery Boost - Professional Blade Template
     Main layout file that composes all sections into a complete professional bridal jewellery showcase
+    Data is pulled from the admin panel database
 --}}
 
 <!DOCTYPE html>
@@ -8,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zara Gold — 22K Bridal Necklace Set</title>
+    <title>{{ $contact->brand_name ?? 'Zara Gold' }} — 22K Bridal Necklace Set</title>
     
     {{-- CSS Stylesheets --}}
     <link rel="stylesheet" href="{{ asset('css/jewellery-boost.css') }}">
@@ -24,16 +25,16 @@
         - Full viewport hero with animated content
         - Call-to-action button linking to order form
         ═════════════════════════════════════════════════════════ --}}
-    @include('components.jewellery.hero')
+    @include('components.jewellery.hero', ['hero' => $hero])
 
 
     {{-- ═════════════════════════════════════════════════════════
         CAROUSEL SECTION
-        - Rotating image gallery with 4 product angles
+        - Rotating image gallery with product angles
         - Auto-play carousel with manual navigation
         - Responsive touch-friendly controls
         ═════════════════════════════════════════════════════════ --}}
-    @include('components.jewellery.carousel')
+    @include('components.jewellery.carousel', ['slides' => $carouselSlides])
 
 
     {{-- ═════════════════════════════════════════════════════════
@@ -42,7 +43,7 @@
         - Price breakdown with old vs current pricing
         - Product tags and features highlight
         ═════════════════════════════════════════════════════════ --}}
-    @include('components.jewellery.product-details')
+    @include('components.jewellery.product-details', ['product' => $product])
 
 
     {{-- ═════════════════════════════════════════════════════════
@@ -51,7 +52,7 @@
         - Size recommendations by body type
         - WhatsApp assistance information
         ═════════════════════════════════════════════════════════ --}}
-    @include('components.jewellery.size-chart')
+    @include('components.jewellery.size-chart', ['sizes' => $sizes])
 
 
     {{-- ═════════════════════════════════════════════════════════
@@ -61,7 +62,7 @@
         - Real-time price calculator
         - Order submission with confirmation modal
         ═════════════════════════════════════════════════════════ --}}
-    @include('components.jewellery.order-form')
+    @include('components.jewellery.order-form', ['materials' => $materials])
 
 
     {{-- ═════════════════════════════════════════════════════════
@@ -70,7 +71,7 @@
         - Social media links (Facebook, WhatsApp)
         - Direct contact information
         ═════════════════════════════════════════════════════════ --}}
-    @include('components.jewellery.contact')
+    @include('components.jewellery.contact', ['contact' => $contact])
 
 
     {{-- ═════════════════════════════════════════════════════════
@@ -79,7 +80,7 @@
         - Quick navigation links
         - Copyright and legal information
         ═════════════════════════════════════════════════════════ --}}
-    @include('components.jewellery.footer')
+    @include('components.jewellery.footer', ['contact' => $contact])
 
 
     {{-- ═════════════════════════════════════════════════════════
@@ -101,3 +102,4 @@
 
 </body>
 </html>
+

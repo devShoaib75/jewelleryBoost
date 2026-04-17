@@ -18,6 +18,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @forelse($sizes ?? [] as $size)
+                    <tr>
+                        <td>{{ $size->size_name }}</td>
+                        <td>{{ $size->length_inches }}</td>
+                        <td>{{ $size->length_cm }}</td>
+                        <td>{{ $size->best_for }}</td>
+                        <td>{{ $size->style }}</td>
+                    </tr>
+                    @empty
                     <tr>
                         <td>XS — Choker</td>
                         <td>14 – 15"</td>
@@ -60,6 +69,7 @@
                         <td>Any requirement</td>
                         <td>Bespoke order</td>
                     </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

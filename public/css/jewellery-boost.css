@@ -192,6 +192,7 @@ body {
 }
 
 .slide-placeholder {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -203,9 +204,21 @@ body {
     gap: 16px;
 }
 
+.slide-placeholder img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 10;
+}
+
 .slide-placeholder .slide-icon {
     font-size: 60px;
     opacity: 0.4;
+    position: relative;
+    z-index: 1;
 }
 
 .slide-1 { background: linear-gradient(135deg, #1a1208, #2d2010, #1a1208); }

@@ -3,8 +3,9 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 let current = 0;
-const total = 4;
 const track = document.getElementById('carouselTrack');
+const slides = document.querySelectorAll('.carousel-slide');
+const total = slides.length; // Dynamically count actual slides
 const dots = document.querySelectorAll('.carousel-dot');
 let autoTimer;
 
@@ -109,15 +110,60 @@ function submitOrder() {
     const making = Math.round(selectedPrice * 0.065);
     const total = selectedPrice + making + 150;
 
-    // Prepare success message
-    document.getElementById('modalMsg').innerHTML =
-        `Thank you, <strong>${name}</strong>! 🎉<br><br>
-        <strong>Order:</strong> ${selectedLabel}<br>
-        <strong>Total:</strong> ৳ ${total.toLocaleString('en-IN')}<br><br>
-        Our team will call you at <strong>${phone}</strong> within 2 hours to confirm your order and payment details.`;
+    // Prepare order data
+    const orderData = {
+        customer_name: name,
+        customer_phone: phone,
+        customer_whatsapp: document.getElementById('custWhatsapp').value.trim() || phone,
+        customer_email: document.getElementById('custEmail')?.value?.trim() || null,
+        delivery_address: address,
+        city: document.getElementById('custCity').value.trim(),
+        necklace_size: document.getElementById('custSize').value || null,
+        product_name: 'Maharani Bridal Necklace Set',
+        material_option: selectedLabel,
+        product_price: selectedPrice,
+        making_charge: making,
+        delivery_charge: 150,
+        total_price: total,
+        payment_method: document.getElementById('custPayment').value,
+        special_notes: document.getElementById('custNotes').value.trim() || null,
+    };
 
-    // Show success modal
-    document.getElementById('successModal').classList.add('active');
+    // Submit order via AJAX
+    fetch('/api/orders/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+        },
+        body: JSON.stringify(orderData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            document.getElementById('modalMsg').innerHTML =
+                `Thank you, <strong>${name}</strong>! 🎉<br><br>
+                <strong>Order #:</strong> ${data.order_number}<br>
+                <strong>Product:</strong> ${selectedLabel}<br>
+                <strong>Total:</strong> ৳ ${total.toLocaleString('en-IN')}<br><br>
+                Our team will call you at <strong>${phone}</strong> within 2 hours to confirm your order and payment details.`;
+
+            // Show success modal
+            document.getElementById('successModal').classList.add('active');
+
+            // Reset form
+            document.querySelectorAll('.form-control, textarea').forEach(el => el.value = '');
+            document.getElementById('custSize').value = '';
+            document.getElementById('custPayment').value = 'Bkash / Nagad (Advance)';
+        } else {
+            alert('Error: ' + (data.message || 'Failed to create order'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error submitting order. Please try again.');
+    });
 }
 
 /**
