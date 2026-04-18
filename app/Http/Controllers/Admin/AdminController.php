@@ -3,6 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateHeroRequest;
+use App\Http\Requests\UpdateProductRequest;
+use App\Http\Requests\StoreMaterialRequest;
+use App\Http\Requests\UpdateMaterialRequest;
+use App\Http\Requests\StoreSizeRequest;
+use App\Http\Requests\UpdateSizeRequest;
+use App\Http\Requests\UpdateContactRequest;
+use App\Http\Requests\StoreCarouselRequest;
+use App\Http\Requests\StoreOrderRequest as UpdateCarouselRequest;
+use App\Http\Requests\StorePublicOrderRequest;
 use App\Models\HeroSection;
 use App\Models\ProductDetail;
 use App\Models\MaterialOption;
@@ -10,7 +20,6 @@ use App\Models\SizeOption;
 use App\Models\ContactInfo;
 use App\Models\CarouselSlide;
 use App\Models\Order;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
@@ -46,18 +55,10 @@ class AdminController extends Controller
         return view('admin.sections.hero', compact('hero'));
     }
 
-    public function updateHero(Request $request)
+    public function updateHero(UpdateHeroRequest $request)
     {
-        $validated = $request->validate([
-            'badge' => 'required|string|max:255',
-            'title_main' => 'required|string|max:255',
-            'title_highlight' => 'required|string|max:255',
-            'subtitle' => 'required|string|max:255',
-            'cta_text' => 'required|string|max:255',
-        ]);
-
         $hero = HeroSection::first() ?? new HeroSection();
-        $hero->fill($validated)->save();
+        $hero->fill($request->validated())->save();
 
         return redirect()->route('admin.hero.edit')->with('success', 'Hero section updated successfully!');
     }
@@ -72,24 +73,10 @@ class AdminController extends Controller
         return view('admin.sections.product', compact('product'));
     }
 
-    public function updateProduct(Request $request)
+    public function updateProduct(UpdateProductRequest $request)
     {
-        $validated = $request->validate([
-            'product_name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'current_price' => 'required|numeric|min:0',
-            'old_price' => 'required|numeric|min:0',
-            'description' => 'required|string',
-            'gold_purity' => 'required|string|max:255',
-            'total_weight' => 'required|string|max:255',
-            'stone_setting' => 'required|string|max:255',
-            'includes' => 'required|string|max:255',
-            'certification' => 'required|string|max:255',
-            'delivery' => 'required|string|max:255',
-        ]);
-
         $product = ProductDetail::first() ?? new ProductDetail();
-        $product->fill($validated)->save();
+        $product->fill($request->validated())->save();
 
         return redirect()->route('admin.product.edit')->with('success', 'Product details updated successfully!');
     }
@@ -109,17 +96,9 @@ class AdminController extends Controller
         return view('admin.sections.material-form');
     }
 
-    public function storeMaterial(Request $request)
+    public function storeMaterial(StoreMaterialRequest $request)
     {
-        $validated = $request->validate([
-            'icon' => 'required|string|max:10',
-            'name' => 'required|string|max:255',
-            'sub_text' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'sort_order' => 'required|integer|min:1',
-        ]);
-
-        MaterialOption::create($validated);
+        MaterialOption::create($request->validated());
         return redirect()->route('admin.material.index')->with('success', 'Material option created!');
     }
 
@@ -129,18 +108,10 @@ class AdminController extends Controller
         return view('admin.sections.material-form', compact('material'));
     }
 
-    public function updateMaterial(Request $request, $id)
+    public function updateMaterial(UpdateMaterialRequest $request, $id)
     {
         $material = MaterialOption::findOrFail($id);
-        $validated = $request->validate([
-            'icon' => 'required|string|max:10',
-            'name' => 'required|string|max:255',
-            'sub_text' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'sort_order' => 'required|integer|min:1',
-        ]);
-
-        $material->update($validated);
+        $material->update($request->validated());
         return redirect()->route('admin.material.index')->with('success', 'Material option updated!');
     }
 
@@ -165,18 +136,9 @@ class AdminController extends Controller
         return view('admin.sections.size-form');
     }
 
-    public function storeSize(Request $request)
+    public function storeSize(StoreSizeRequest $request)
     {
-        $validated = $request->validate([
-            'size_name' => 'required|string|max:255',
-            'length_inches' => 'required|string|max:255',
-            'length_cm' => 'required|string|max:255',
-            'best_for' => 'required|string|max:255',
-            'style' => 'required|string|max:255',
-            'sort_order' => 'required|integer|min:1',
-        ]);
-
-        SizeOption::create($validated);
+        SizeOption::create($request->validated());
         return redirect()->route('admin.size.index')->with('success', 'Size option created!');
     }
 
@@ -186,19 +148,10 @@ class AdminController extends Controller
         return view('admin.sections.size-form', compact('size'));
     }
 
-    public function updateSize(Request $request, $id)
+    public function updateSize(UpdateSizeRequest $request, $id)
     {
         $size = SizeOption::findOrFail($id);
-        $validated = $request->validate([
-            'size_name' => 'required|string|max:255',
-            'length_inches' => 'required|string|max:255',
-            'length_cm' => 'required|string|max:255',
-            'best_for' => 'required|string|max:255',
-            'style' => 'required|string|max:255',
-            'sort_order' => 'required|integer|min:1',
-        ]);
-
-        $size->update($validated);
+        $size->update($request->validated());
         return redirect()->route('admin.size.index')->with('success', 'Size option updated!');
     }
 
@@ -218,22 +171,10 @@ class AdminController extends Controller
         return view('admin.sections.contact', compact('contact'));
     }
 
-    public function updateContact(Request $request)
+    public function updateContact(UpdateContactRequest $request)
     {
-        $validated = $request->validate([
-            'shop_address' => 'required|string',
-            'shop_hours' => 'required|string|max:255',
-            'facebook_url' => 'required|url',
-            'facebook_name' => 'required|string|max:255',
-            'whatsapp_number' => 'required|string|max:255',
-            'email' => 'required|email',
-            'brand_name' => 'required|string|max:255',
-            'tagline' => 'required|string|max:255',
-            'copyright' => 'required|string',
-        ]);
-
         $contact = ContactInfo::first() ?? new ContactInfo();
-        $contact->fill($validated)->save();
+        $contact->fill($request->validated())->save();
 
         return redirect()->route('admin.contact.edit')->with('success', 'Contact information updated successfully!');
     }
@@ -253,22 +194,16 @@ class AdminController extends Controller
         return view('admin.sections.carousel-form');
     }
 
-    public function storeCarousel(Request $request)
+    public function storeCarousel(StoreCarouselRequest $request)
     {
-        $validated = $request->validate([
-            'icon' => 'required|string|max:10',
-            'tag' => 'required|string|max:255',
-            'caption' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'sort_order' => 'required|integer|min:1',
-        ]);
+        $data = $request->validated();
 
         // Handle image upload
         if ($request->hasFile('image')) {
-            $validated['image_path'] = $request->file('image')->store('carousel', 'public');
+            $data['image_path'] = $request->file('image')->store('carousel', 'public');
         }
 
-        CarouselSlide::create($validated);
+        CarouselSlide::create($data);
         return redirect()->route('admin.carousel.index')->with('success', 'Carousel slide created!');
     }
 
@@ -278,16 +213,10 @@ class AdminController extends Controller
         return view('admin.sections.carousel-form', compact('slide'));
     }
 
-    public function updateCarousel(Request $request, $id)
+    public function updateCarousel(UpdateCarouselRequest $request, $id)
     {
         $slide = CarouselSlide::findOrFail($id);
-        $validated = $request->validate([
-            'icon' => 'required|string|max:10',
-            'tag' => 'required|string|max:255',
-            'caption' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'sort_order' => 'required|integer|min:1',
-        ]);
+        $data = $request->validated();
 
         // Handle image upload - delete old image if new one is uploaded
         if ($request->hasFile('image')) {
@@ -295,10 +224,10 @@ class AdminController extends Controller
             if ($slide->image_path && Storage::disk('public')->exists($slide->image_path)) {
                 Storage::disk('public')->delete($slide->image_path);
             }
-            $validated['image_path'] = $request->file('image')->store('carousel', 'public');
+            $data['image_path'] = $request->file('image')->store('carousel', 'public');
         }
 
-        $slide->update($validated);
+        $slide->update($data);
         return redirect()->route('admin.carousel.index')->with('success', 'Carousel slide updated!');
     }
 
@@ -361,31 +290,14 @@ class AdminController extends Controller
     /**
      * Store a new order from public form (API endpoint)
      */
-    public function storeOrder(Request $request)
+    public function storeOrder(StorePublicOrderRequest $request)
     {
-        $validated = $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_phone' => 'required|string|max:20',
-            'customer_whatsapp' => 'nullable|string|max:20',
-            'customer_email' => 'nullable|email',
-            'delivery_address' => 'required|string|max:500',
-            'city' => 'nullable|string|max:100',
-            'necklace_size' => 'nullable|string|max:100',
-            'product_name' => 'required|string|max:255',
-            'material_option' => 'required|string|max:255',
-            'product_price' => 'required|numeric|min:0',
-            'making_charge' => 'required|numeric|min:0',
-            'delivery_charge' => 'required|numeric|min:0',
-            'total_price' => 'required|numeric|min:0',
-            'payment_method' => 'required|string|max:100',
-            'special_notes' => 'nullable|string|max:1000',
-        ]);
-        
         // Generate order number
-        $validated['order_number'] = Order::generateOrderNumber();
+        $data = $request->validated();
+        $data['order_number'] = Order::generateOrderNumber();
         
         // Create order
-        $order = Order::create($validated);
+        $order = Order::create($data);
         
         return response()->json([
             'success' => true,

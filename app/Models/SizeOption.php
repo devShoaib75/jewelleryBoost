@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SizeOption extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'size_name',
@@ -18,8 +19,13 @@ class SizeOption extends Model
         'sort_order',
     ];
 
+    public function scopeSorted($query)
+    {
+        return $query->orderBy('sort_order');
+    }
+
     public static function getAll()
     {
-        return self::orderBy('sort_order')->get();
+        return self::sorted()->get();
     }
 }

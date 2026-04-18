@@ -3,9 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 
-// Admin Panel Routes
-Route::prefix('admin')->name('admin.')->group(function () {
+// Admin Panel Routes - Protected by auth middleware
+Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum,web', 'admin'])->group(function () {
     
+    // Logout
+    Route::post('/logout', [\App\Http\Controllers\Admin\AdminAuthController::class, 'logout'])->name('logout');
+
     // Dashboard
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
 

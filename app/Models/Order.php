@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'order_number',
         'customer_name',
         'customer_phone',
@@ -37,6 +39,14 @@ class Order extends Model
     ];
 
     /**
+     * Get the user that placed this order
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
      * Generate unique order number
      */
     public static function generateOrderNumber()
@@ -47,35 +57,91 @@ class Order extends Model
     }
 
     /**
-     * Get all pending orders
+     * Scope: Get pending orders
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending')->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Scope: Get confirmed orders
+     */
+    public function scopeConfirmed($query)
+    {
+        return $query->where('status', 'confirmed')->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Scope: Get shipped orders
+     */
+    public function scopeShipped($query)
+    {
+        return $query->where('status', 'shipped')->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Scope: Get delivered orders
+     */
+    public function scopeDelivered($query)
+    {
+        return $query->where('status', 'delivered')->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Scope: Get cancelled orders
+     */
+    public function scopeCancelled($query)
+    {
+        return $query->where('status', 'cancelled')->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Scope: Filter by status
+     */
+    public function scopeByStatus($query, $status)
+    {
+        return $query->where('status', $status)->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Scope: Get recent orders (backwards compatibility)
+     */
+    public function scopeRecent($query)
+    {
+        return $query->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Get all pending orders (for backwards compatibility)
      */
     public static function getPending()
     {
-        return self::where('status', 'pending')->orderBy('created_at', 'desc')->get();
+        return self::pending()->get();
     }
 
     /**
-     * Get all confirmed orders
+     * Get all confirmed orders (for backwards compatibility)
      */
     public static function getConfirmed()
     {
-        return self::where('status', 'confirmed')->orderBy('created_at', 'desc')->get();
+        return self::confirmed()->get();
     }
 
     /**
-     * Get orders by status
+     * Get orders by status (for backwards compatibility)
      */
     public static function getByStatus($status)
     {
-        return self::where('status', $status)->orderBy('created_at', 'desc')->get();
+        return self::byStatus($status)->get();
     }
 
     /**
-     * Get all orders with recent first
+     * Get all orders with recent first (for backwards compatibility)
      */
     public static function getAll()
     {
-        return self::orderBy('created_at', 'desc')->get();
+        return self::recent()->get();
     }
 
     /**
